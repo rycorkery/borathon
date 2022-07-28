@@ -24,7 +24,14 @@ def openAccount():
 
 @app.route("/api/CustomerAccount/CloseCustomerAccount", methods = ["POST"])
 def closeAccount():
-    return
+    account_number = request.json['account_number']
+
+    for customerAccount in customerAccounts:
+        if customerAccount.account_number == account_number:
+            customerAccount.status = 0
+            return json.dumps(customerAccount.__dict__)
+
+    abort(400, 'Account number not found.')
 
 @app.route("/api/CustomerAccount/ApplyTransactionToCustomerAccount", methods = ["GET"])
 def applyTransaction():
