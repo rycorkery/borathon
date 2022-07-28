@@ -48,13 +48,6 @@ def openAccount():
     )
     customerAccounts.append(customer_account)
 
-    ca = customerAccounts[0]
-    print(ca.id)
-    print(ca.first_name)
-    print(ca.last_name)
-    print(ca.account_number)
-    print(ca.balance)
-
     return ""
 
 @app.route("/api/CustomerAccount/CloseCustomerAccount", methods = ["POST"])
