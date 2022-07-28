@@ -1,6 +1,7 @@
 from flask import Flask, request, abort
 from CustomerAccount import CustomerAccount
 import json
+from Transaction import Transaction
 
 app = Flask(__name__)
 customerAccounts = []
@@ -27,7 +28,27 @@ def closeAccount():
 
 @app.route("/api/CustomerAccount/ApplyTransactionToCustomerAccount", methods = ["GET"])
 def applyTransaction():
-    return
+    if 'accountNumber' not in request.json or not request.json['accountNumber'].isnumeric():
+        abort(400, 'Invalid account number')
+    if 'amount' not in request.json or not request.json['amount'].isnumeric():
+        abort(400, 'Invalid amount')
+    if 'transactionType' not in request.json or (request.json['transactionType'] != '1' and request.json['transactionType'] != '2'):
+        abort(400, 'Invalid transaction type')
+
+    acc_number = request.json['accountNumber']
+    amount = request.json['amount']
+    trans_type = request.json['transactionType']
+
+    t = Transaction(1, amount, acc_number, trans_type)
+    # Save transaction
+    transactions.append(t)
+
+    # Find appropriate customer account
+    found_customer_acc = customerAccounts[0]
+    found_customer_acc.balance += amount
+    # Save customer account
+
+    return ''
 
 if __name__ == "__main__":
     app.run()
