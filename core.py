@@ -47,6 +47,7 @@ def applyTransaction():
     trans_type = request.json['transactionType']
 
     t = Transaction(1, amount, acc_number, trans_type)
+    t.save()
     # Save transaction
     transactions.append(t)
 
@@ -58,4 +59,4 @@ def applyTransaction():
     return ''
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
