@@ -6,10 +6,7 @@ import uuid
 
 from app import get_app_db
 
-customerAccounts = []
-transactions = []
-latest_account_number = 0
-
+last_account_number = 0
 app, db = get_app_db()
 
 @app.route("/api/CustomerAccount/GetCustomerAccountByAccountNumber", methods = ["GET"])
@@ -24,7 +21,7 @@ def lookupAccount():
 
 @app.route("/api/CustomerAccount/OpenCustomerAccount", methods = ["POST"])
 def openAccount():
-    global latest_account_number
+    global last_account_number
 
     # extract first and last name
     first_name = request.json['firstName']
@@ -36,17 +33,18 @@ def openAccount():
     if (not first_name.isalpha()) or (not last_name.isalpha()):
         abort(400, "No spaces allowed in first or last name")
 
-    # auto-incrementing account number
-    latest_account_number += 1
+    # generate unique account number
+    last_account_number += 1
+    account_number = last_account_number
 
     # save the account
     customer_account = CustomerAccount(
-        latest_account_number,
-        str(latest_account_number),
-        0.0,
-        1,
-        first_name,
-        last_name
+        # id = account_number,
+        # account_number = str(account_number),
+        balance = 0.0,
+        status = 1,
+        first_name = first_name,
+        last_name = last_name
     )
     db.session.add(customer_account)
     db.session.commit()
@@ -93,6 +91,7 @@ def applyTransaction():
 
 if __name__ == "__main__":
     # upon restarting application, reset the DB
+    last_account_number = 0
     db.drop_all()
     db.create_all()
-    app.run()
+    app.run(host="0.0.0.0")
