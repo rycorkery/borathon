@@ -61,11 +61,13 @@ def openAccount():
 @app.route("/api/CustomerAccount/CloseCustomerAccount", methods = ["POST"])
 def closeAccount():
     account_number = request.json['account_number']
+    
+    customer_account = CustomerAccount.query.get(account_number)
 
-    for customerAccount in customerAccounts:
-        if customerAccount.account_number == account_number:
-            customerAccount.status = 0
-            return json.dumps(customerAccount.__dict__)
+    if customer_account != None:
+        customer_account.staus = 0
+        db.session.commit()
+        return json.dumps(customer_account.__dict__)
 
     abort(400, 'Account number not found.')
 
