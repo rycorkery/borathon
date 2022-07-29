@@ -2,10 +2,26 @@ from flask import Flask, request, abort
 from CustomerAccount import CustomerAccount
 import json
 from Transaction import Transaction
+from datetime import datetime
+import pymysql
+
+# Connect to the database
+ENDPOINT = "corkeryr-db.cfbtwcgfvkzx.us-east-1.rds.amazonaws.com"
+PORT = "3306"
+USER = "admin"
+PASSWORD = "test1234!!?"
+REGION = "us-east-1"
+DBNAME = "borathon"
+connection = pymysql.connect(host=ENDPOINT,
+                             user=USER,
+                             password=PASSWORD,
+                             database=DBNAME,
+                             cursorclass=pymysql.cursors.DictCursor)
 
 app = Flask(__name__)
 customerAccounts = []
 transactions = []
+latest_account_number = 0
 
 @app.route("/api/CustomerAccount/GetCustomerAccountByAccountNumber", methods = ["GET"])
 def lookupAccount():
@@ -20,7 +36,33 @@ def lookupAccount():
 
 @app.route("/api/CustomerAccount/OpenCustomerAccount", methods = ["POST"])
 def openAccount():
-    return
+    global latest_account_number
+
+    # extract first and last name
+    first_name = request.json['firstName']
+    last_name = request.json['lastName']
+
+    # first and last name validation
+    if (not isinstance(first_name, str)) or (not isinstance(last_name, str)):
+        abort(400, "First name or Last name are not strings")
+    if (not first_name.isalpha()) or (not last_name.isalpha()):
+        abort(400, "No spaces allowed in first or last name")
+
+    # auto-incrementing account number
+    latest_account_number += 1
+
+    # save the account
+    customer_account = CustomerAccount(
+        latest_account_number,
+        str(latest_account_number),
+        0.0,
+        1,
+        first_name,
+        last_name
+    )
+    customerAccounts.append(customer_account)
+
+    return ""
 
 @app.route("/api/CustomerAccount/CloseCustomerAccount", methods = ["POST"])
 def closeAccount():
