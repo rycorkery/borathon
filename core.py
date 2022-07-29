@@ -60,16 +60,14 @@ def openAccount():
 
 @app.route("/api/CustomerAccount/CloseCustomerAccount", methods = ["POST"])
 def closeAccount():
-    account_number = request.json['account_number']
+    account_number = int(request.json['account_number'])
     
-    customer_account = CustomerAccount.query.get(account_number)
+    customer_account = CustomerAccount.query.filter_by(account_number=account_number).first_or_404(description="Specified user not found")
 
-    if customer_account != None:
-        customer_account.staus = 0
-        db.session.commit()
-        return json.dumps(customer_account.__dict__)
+    customer_account.status = 0
+    db.session.commit()
 
-    abort(400, 'Account number not found.')
+    return json.dumps(customer_account.__dict__)
 
 @app.route("/api/CustomerAccount/ApplyTransactionToCustomerAccount", methods = ["GET"])
 def applyTransaction():
