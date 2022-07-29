@@ -1,15 +1,14 @@
-from sqlalchemy import Column, Integer, Numeric
-from sqlalchemy.orm import declarative_base
+from app import get_app_db
 
-Base = declarative_base()
+_, db = get_app_db()
 
-class Transaction(Base):
+class Transaction(db.Model):
     __tablename__ = "transactions"
 
-    id = Column(Integer, primary_key=True)
-    account = Column(Integer)
-    type = Column(Integer)
-    associated_account = Column(Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    account = db.Column(db.Integer)
+    type = db.Column(db.Integer)
+    associated_account = db.Column(db.Integer)
 
     def __init__(self, id, amount, type, associated_account):
         self.id = id

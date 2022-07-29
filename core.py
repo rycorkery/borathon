@@ -1,30 +1,16 @@
-from flask import Flask, request, abort
+from flask import request, abort
 from CustomerAccount import CustomerAccount
 import json
 from Transaction import Transaction
-from datetime import datetime
-import pymysql
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 
-# Connect to the database
-ENDPOINT = "corkeryr-db.cfbtwcgfvkzx.us-east-1.rds.amazonaws.com"
-PORT = "3306"
-USER = "admin"
-PASSWORD = "test1234!!?"
-REGION = "us-east-1"
-DBNAME = "borathon"
-connect_string = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8mb4'.format(USER, PASSWORD, ENDPOINT, PORT, DBNAME)
-# connect_string = f"mysql://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DBNAME}"
-# connection = create_engine(connect_string, echo = True)
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = connect_string
-db = SQLAlchemy(app)
+from app import get_app_db
 
 customerAccounts = []
 transactions = []
 latest_account_number = 0
+
+app, db = get_app_db()
 
 @app.route("/api/CustomerAccount/GetCustomerAccountByAccountNumber", methods = ["GET"])
 def lookupAccount():
@@ -103,11 +89,6 @@ def applyTransaction():
 
     return ''
 
-def before_first_request():
-    print("HELLOOO")
-    print()
-
 if __name__ == "__main__":
-    app.before_first_request(before_first_request)
     db.create_all()
     app.run(debug=True)
