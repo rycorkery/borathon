@@ -3,6 +3,19 @@ from CustomerAccount import CustomerAccount
 import json
 from Transaction import Transaction
 from datetime import datetime
+import pymysql
+
+# Connect to the database
+ENDPOINT = "corkeryr-db.cfbtwcgfvkzx.us-east-1.rds.amazonaws.com"
+PORT = "3306"
+USER = "admin"
+PASSWORD = "test1234!!?"
+REGION = "us-east-1"
+DBNAME = "borathon"
+connection = pymysql.connect(host=ENDPOINT,
+                             user=USER,
+                             password=PASSWORD,
+                             cursorclass=pymysql.cursors.DictCursor)
 
 app = Flask(__name__)
 customerAccounts = []
