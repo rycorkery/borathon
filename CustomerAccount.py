@@ -1,17 +1,16 @@
-from sqlalchemy import Column, Integer, Numeric, String
-from sqlalchemy.orm import declarative_base
+from app import get_app_db
 
-Base = declarative_base()
+_, db = get_app_db()
 
-class CustomerAccount(Base):
+class CustomerAccount(db.Model):
     __tablename__ = "customer_account"
 
-    id = Column(Integer, primary_key=True)
-    account_number = Column(Integer)
-    balance = Column(Numeric)
-    status = Column(Integer)
-    first_name = Column(String)
-    last_name = Column(String)
+    id = db.Column(db.Integer, primary_key=True)
+    account_number = db.Column(db.Integer)
+    balance = db.Column(db.Numeric)
+    status = db.Column(db.Integer)
+    first_name = db.Column(db.String(64))
+    last_name = db.Column(db.String(64))
 
     def __init__(self, id, account_number, balance, status, first_name, last_name):
         self.id = id
