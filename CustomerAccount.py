@@ -5,13 +5,8 @@ _, db = get_app_db()
 class CustomerAccount(db.Model):
     __tablename__ = "customer_account"
 
-    def default_acct_number(context):
-        return str(context.get_current_parameters()['id'])
-
     id = db.Column(db.BigInteger, primary_key=True)
-    account_number = db.Column(
-        db.String(64), default=default_acct_number, onupdate=default_acct_number
-    )
+    account_number = db.Column(db.String(128))
     balance = db.Column(db.Numeric)
     status = db.Column(db.Integer)
     first_name = db.Column(db.String(64))
