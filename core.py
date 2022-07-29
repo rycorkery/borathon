@@ -4,6 +4,7 @@ import json
 from Transaction import Transaction
 from datetime import datetime
 import pymysql
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 
 # Connect to the database
@@ -14,9 +15,13 @@ PASSWORD = "test1234!!?"
 REGION = "us-east-1"
 DBNAME = "borathon"
 connect_string = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8mb4'.format(USER, PASSWORD, ENDPOINT, PORT, DBNAME)
-connection = create_engine(connect_string, echo = True)
+# connect_string = f"mysql://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DBNAME}"
+# connection = create_engine(connect_string, echo = True)
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = connect_string
+db = SQLAlchemy(app)
+
 customerAccounts = []
 transactions = []
 latest_account_number = 0
@@ -98,5 +103,11 @@ def applyTransaction():
 
     return ''
 
+def before_first_request():
+    print("HELLOOO")
+    print()
+
 if __name__ == "__main__":
+    app.before_first_request(before_first_request)
+    db.create_all()
     app.run(debug=True)
