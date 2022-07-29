@@ -15,6 +15,7 @@ DBNAME = "borathon"
 connection = pymysql.connect(host=ENDPOINT,
                              user=USER,
                              password=PASSWORD,
+                             database=DBNAME,
                              cursorclass=pymysql.cursors.DictCursor)
 
 app = Flask(__name__)
