@@ -49,8 +49,24 @@ def openAccount():
         first_name,
         last_name
     )
-    customerAccounts.append(customer_account)
+    db.session.add(customer_account)
+    db.session.commit()
 
+    customer_accounts = CustomerAccount.query.all()
+    for ca in customer_accounts:
+        print(ca.first_name)
+    # db.ses
+    # with db.session as session:
+    #     customer_account = CustomerAccount(
+    #         latest_account_number,
+    #         str(latest_account_number),
+    #         0.0,
+    #         1,
+    #         first_name,
+    #         last_name
+    #     )
+    #     session.add(customer_account)
+    # customerAccounts.append(customer_account)
     return ""
 
 @app.route("/api/CustomerAccount/CloseCustomerAccount", methods = ["POST"])
@@ -90,5 +106,7 @@ def applyTransaction():
     return ''
 
 if __name__ == "__main__":
+    # upon restarting application, clear DB and restart it again
+    db.drop_all()
     db.create_all()
     app.run(debug=True)
