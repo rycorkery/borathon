@@ -4,6 +4,7 @@ import json
 from Transaction import Transaction
 from datetime import datetime
 import pymysql
+from sqlalchemy import create_engine
 
 # Connect to the database
 ENDPOINT = "corkeryr-db.cfbtwcgfvkzx.us-east-1.rds.amazonaws.com"
@@ -12,11 +13,8 @@ USER = "admin"
 PASSWORD = "test1234!!?"
 REGION = "us-east-1"
 DBNAME = "borathon"
-connection = pymysql.connect(host=ENDPOINT,
-                             user=USER,
-                             password=PASSWORD,
-                             database=DBNAME,
-                             cursorclass=pymysql.cursors.DictCursor)
+connect_string = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8mb4'.format(USER, PASSWORD, ENDPOINT, PORT, DBNAME)
+connection = create_engine(connect_string, echo = True)
 
 app = Flask(__name__)
 customerAccounts = []
