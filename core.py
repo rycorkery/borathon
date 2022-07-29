@@ -17,10 +17,9 @@ def lookupAccount():
     id = int(request.args.get('id'))
     if id == None:
         abort(400, 'Insuffient ID specified.')
-    for customerAccount in customerAccounts:
-        print(customerAccount.id)
-        if customerAccount.id == id:
-            return json.dumps(customerAccount.__dict__)
+    customer = CustomerAccount.query.get(id)
+    if customer != None:
+        return json.dumps(customerAccount.__dict__)
     abort(400, "This ID was not found.")
 
 @app.route("/api/CustomerAccount/OpenCustomerAccount", methods = ["POST"])
@@ -99,4 +98,4 @@ if __name__ == "__main__":
     # upon restarting application, reset the DB
     db.drop_all()
     db.create_all()
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
