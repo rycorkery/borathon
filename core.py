@@ -21,8 +21,6 @@ def lookupAccount():
 
 @app.route("/api/CustomerAccount/OpenCustomerAccount", methods = ["POST"])
 def openAccount():
-    global last_account_number
-
     # extract first and last name
     first_name = request.json['firstName']
     last_name = request.json['lastName']
@@ -33,14 +31,10 @@ def openAccount():
     if (not first_name.isalpha()) or (not last_name.isalpha()):
         abort(400, "No spaces allowed in first or last name")
 
-    # generate unique account number
-    last_account_number += 1
-    account_number = last_account_number
-
     # save the account
     customer_account = CustomerAccount(
-        # id = account_number,
-        # account_number = str(account_number),
+        id = 0,
+        account_number = str(uuid.uuid4().int),
         balance = 0.0,
         status = 1,
         first_name = first_name,
@@ -51,20 +45,17 @@ def openAccount():
 
     # quering Customer Accounts to see if customer account
     # has been added to the database
-    customer_accounts = CustomerAccount.query.all()
-    for ca in customer_accounts:
-        print(ca.first_name)
+    #customer_accounts = CustomerAccount.query.all()
+    #for ca in customer_accounts:
+        #print(ca.first_name)
     return ""
 
 @app.route("/api/CustomerAccount/CloseCustomerAccount", methods = ["POST"])
 def closeAccount():
     account_number = int(request.json['account_number'])
-    
     customer_account = CustomerAccount.query.filter_by(account_number=account_number).first_or_404(description="Specified user not found")
-
     customer_account.status = 0
     db.session.commit()
-
     return json.dumps(customer_account.__dict__)
 
 @app.route("/api/CustomerAccount/ApplyTransactionToCustomerAccount", methods = ["GET"])
@@ -91,7 +82,6 @@ def applyTransaction():
 
 if __name__ == "__main__":
     # upon restarting application, reset the DB
-    last_account_number = 0
-    db.drop_all()
+    #db.drop_all()
     db.create_all()
     app.run(host="0.0.0.0")
