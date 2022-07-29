@@ -3,6 +3,7 @@ from CustomerAccount import CustomerAccount
 import json
 from Transaction import Transaction
 import uuid
+import decimal
 
 from app import get_app_db
 
@@ -16,7 +17,7 @@ def lookupAccount():
         abort(400, 'Insuffient ID specified.')
     customer = CustomerAccount.query.get(id)
     if customer != None:
-        return json.dumps(customer.__dict__)
+        return str(customer)
     abort(400, "This ID was not found.")
 
 @app.route("/api/CustomerAccount/OpenCustomerAccount", methods = ["POST"])
@@ -42,12 +43,6 @@ def openAccount():
     )
     db.session.add(customer_account)
     db.session.commit()
-
-    # quering Customer Accounts to see if customer account
-    # has been added to the database
-    #customer_accounts = CustomerAccount.query.all()
-    #for ca in customer_accounts:
-        #print(ca.first_name)
     return ""
 
 @app.route("/api/CustomerAccount/CloseCustomerAccount", methods = ["POST"])
@@ -56,13 +51,13 @@ def closeAccount():
     customer_account = CustomerAccount.query.filter_by(account_number=account_number).first_or_404(description="Specified user not found")
     customer_account.status = 0
     db.session.commit()
-    return json.dumps(customer_account.__dict__)
+    return "Account closed."
 
-@app.route("/api/CustomerAccount/ApplyTransactionToCustomerAccount", methods = ["GET"])
+@app.route("/api/CustomerAccount/ApplyTransactionToCustomerAccount", methods = ["POST"])
 def applyTransaction():
     if 'accountNumber' not in request.json or not request.json['accountNumber'].isnumeric():
         abort(400, 'Invalid account number')
-    if 'amount' not in request.json or not request.json['amount'].isnumeric():
+    if 'amount' not in request.json:
         abort(400, 'Invalid amount')
     if 'transactionType' not in request.json or (request.json['transactionType'] != '1' and request.json['transactionType'] != '2'):
         abort(400, 'Invalid transaction type')
@@ -75,13 +70,12 @@ def applyTransaction():
     db.session.add(t)
 
     cust_acc = CustomerAccount.query.filter_by(account_number=acc_number).first_or_404(description="Specified user not found")
-    cust_acc.balance += amount
+    cust_acc.balance += decimal.Decimal(amount)
     db.session.commit()
 
     return ''
 
 if __name__ == "__main__":
     # upon restarting application, reset the DB
-    #db.drop_all()
     db.create_all()
     app.run(host="0.0.0.0")
