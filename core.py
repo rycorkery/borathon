@@ -2,7 +2,7 @@ from flask import request, abort
 from CustomerAccount import CustomerAccount
 import json
 from Transaction import Transaction
-from sqlalchemy import create_engine
+import uuid
 
 from app import get_app_db
 
@@ -19,7 +19,7 @@ def lookupAccount():
         abort(400, 'Insuffient ID specified.')
     customer = CustomerAccount.query.get(id)
     if customer != None:
-        return json.dumps(customerAccount.__dict__)
+        return json.dumps(customer.__dict__)
     abort(400, "This ID was not found.")
 
 @app.route("/api/CustomerAccount/OpenCustomerAccount", methods = ["POST"])
@@ -80,19 +80,16 @@ def applyTransaction():
     if 'transactionType' not in request.json or (request.json['transactionType'] != '1' and request.json['transactionType'] != '2'):
         abort(400, 'Invalid transaction type')
 
-    acc_number = request.json['accountNumber']
-    amount = request.json['amount']
-    trans_type = request.json['transactionType']
+    acc_number = int(request.json['accountNumber'])
+    amount = float(request.json['amount'])
+    trans_type = int(request.json['transactionType'])
 
-    t = Transaction(1, amount, acc_number, trans_type)
-    t.save()
-    # Save transaction
-    transactions.append(t)
+    t = Transaction(uuid.uuid4().int, amount, trans_type, acc_number)
+    db.session.add(t)
 
-    # Find appropriate customer account
-    found_customer_acc = customerAccounts[0]
-    found_customer_acc.balance += amount
-    # Save customer account
+    cust_acc = CustomerAccount.query.filter_by(account_number=acc_number).first_or_404(description="Specified user not found")
+    cust_acc.balance += amount
+    db.session.commit()
 
     return ''
 
@@ -100,4 +97,4 @@ if __name__ == "__main__":
     # upon restarting application, reset the DB
     db.drop_all()
     db.create_all()
-    app.run(host='0.0.0.0')
+    app.run()
