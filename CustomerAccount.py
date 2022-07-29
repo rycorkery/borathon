@@ -12,6 +12,9 @@ class CustomerAccount(db.Model):
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
 
+    def __str__(self):
+        return f"{self.id} | {self.account_number} | {self.balance} | {self.status} | {self.first_name} | {self.last_name}"
+
     def __init__(self, id, account_number, balance, status, first_name, last_name):
         self.id = id
         self.account_number = account_number
