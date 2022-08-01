@@ -77,5 +77,6 @@ def applyTransaction():
 
 if __name__ == "__main__":
     # upon restarting application, reset the DB
+    # db.drop_all()
     db.create_all()
-    app.run(host="0.0.0.0")
+    app.run(debug=True, host='0.0.0.0', port=int('8080'))

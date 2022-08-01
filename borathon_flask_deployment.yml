@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: borathon-flask
+  namespace: borathon-app
+  labels:
+    app: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      serviceAccountName: borathon-flask
+      containers:
+      - name: borathon-flask
+        image: public.ecr.aws/l3m3r1u0/borathon-app:latest
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        fsGroup: 1337

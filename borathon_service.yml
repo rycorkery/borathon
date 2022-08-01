@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: borathon-flask
+  namespace: borathon-app
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::320023406682:role/EKS-RDS-access
